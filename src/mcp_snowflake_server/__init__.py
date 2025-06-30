@@ -11,10 +11,6 @@ from . import server
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    # Add arguments
-    parser.add_argument(
-        "--allow_write", required=False, default=False, action="store_true", help="Allow write operations on the database"
-    )
     parser.add_argument("--log_dir", required=False, default=None, help="Directory to log to")
     parser.add_argument("--log_level", required=False, default="INFO", help="Logging level")
     parser.add_argument(
@@ -59,7 +55,6 @@ def parse_args():
 
     # Now we can add the known args to kwargs
     server_args = {
-        "allow_write": args.allow_write,
         "log_dir": args.log_dir,
         "log_level": args.log_level,
         "prefetch": args.prefetch,
@@ -96,7 +91,6 @@ def main():
     asyncio.run(
         server.main(
             connection_args=connection_args,
-            allow_write=server_args["allow_write"],
             log_dir=server_args["log_dir"],
             prefetch=server_args["prefetch"],
             log_level=server_args["log_level"],
