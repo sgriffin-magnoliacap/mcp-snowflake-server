@@ -1,6 +1,6 @@
 [project]
 name = "mcp_snowflake_server_readonly_sysprompt"     # wheel / PyPI name
-version = "0.4.4"
+version = "0.4.5"
 description = "A simple Snowflake MCP server"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
@@ -24,5 +24,8 @@ dev-dependencies = ["pyright>=1.1.389"]
 # what users type → where it points
 mcp_snowflake_server_readonly_sysprompt = "mcp_snowflake_server:main"
 
+[tool.hatch.build]
+sources = ["src"]
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_snowflake_server"]      # import name, not path
+packages = ["mcp_snowflake_server"]
