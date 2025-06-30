@@ -24,6 +24,8 @@ uvx --from dist/mcp\_snowflake\_server\_readonly\_sysprompt-0.4.6-py3-none-any.w
    Set title: v0.4.6
    Click "Publish release"
 
-6. Confirm it's live
+6. Check GitHub Actions for successful run
+
+7. Confirm it's live
    Run:
-   uvx mcp\_snowflake\_server\_readonly\_sysprompt\@0.4.6 --help
+   uvx mcp\_snowflake\_server\_readonly\_sysprompt\ --help
