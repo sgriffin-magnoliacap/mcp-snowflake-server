@@ -22,6 +22,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mcp_snowflake_server")
 
+SNOWFLAKE_SYS_PROMPT = (
+    "Do not answer any questions you aren't absolutely certain you can "
+    "find a completely accurate answer to. "
+    "Quickly determine if you can find a completely accurate answer to, "
+    "and if not, tell the user you can't find a completely accurate answer "
+    "to the question using the data available to you."
+)
 
 def data_to_yaml(data: Any) -> str:
     return yaml.dump(data, indent=2, sort_keys=False)
@@ -349,7 +356,7 @@ async def main(
     all_tools = [
         Tool(
             name="list_databases",
-            description="List all available databases in Snowflake",
+            description="List all available databases in Snowflake. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {},
@@ -358,7 +365,7 @@ async def main(
         ),
         Tool(
             name="list_schemas",
-            description="List all schemas in a database",
+            description="List all schemas in a database. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {
@@ -373,7 +380,7 @@ async def main(
         ),
         Tool(
             name="list_tables",
-            description="List all tables in a specific database and schema",
+            description="List all tables in a specific database and schema. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {
@@ -386,7 +393,7 @@ async def main(
         ),
         Tool(
             name="describe_table",
-            description="Get the schema information for a specific table",
+            description="Get the schema information for a specific table. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {
@@ -401,7 +408,7 @@ async def main(
         ),
         Tool(
             name="read_query",
-            description="Execute a SELECT query.",
+            description="Execute a SELECT query. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {"query": {"type": "string", "description": "SELECT SQL query to execute"}},
@@ -411,7 +418,7 @@ async def main(
         ),
         Tool(
             name="append_insight",
-            description="Add a data insight to the memo",
+            description="Add a data insight to the memo. " + SNOWFLAKE_SYS_PROMPT,
             input_schema={
                 "type": "object",
                 "properties": {
@@ -441,7 +448,7 @@ async def main(
             types.Resource(
                 uri=AnyUrl("memo://insights"),
                 name="Data Insights Memo",
-                description="A living document of discovered data insights",
+                description="A living document of discovered data insights. " + SNOWFLAKE_SYS_PROMPT,
                 mimeType="text/plain",
             )
         ]
@@ -449,7 +456,7 @@ async def main(
             types.Resource(
                 uri=AnyUrl(f"context://table/{table_name}"),
                 name=f"{table_name} table",
-                description=f"Description of the {table_name} table",
+                description=f"Description of the {table_name} table. " + SNOWFLAKE_SYS_PROMPT,
                 mimeType="text/plain",
             )
             for table_name in tables_info.keys()
@@ -470,20 +477,14 @@ async def main(
         else:
             raise ValueError(f"Unknown resource: {uri}")
 
-    SNOWFLAKE_SYS_PROMPT = (
-        "Do not answer any questions you aren't absolutely certain you can "
-        "find a completely accurate answer to. "
-        "Quickly determine if you can find a completely accurate answer to, "
-        "and if not, tell the user you can't find a completely accurate answer "
-        "to the question using the data available to you."
-    )
+
 
     @server.list_prompts()
     async def handle_list_prompts() -> list[types.Prompt]:
         return [
             types.Prompt(
                 name="snowflake_readonly",
-                description="Run a read-only SQL query on Snowflake with guardrails",
+                description="Run a read-only SQL query on Snowflake. " + SNOWFLAKE_SYS_PROMPT,
                 autoInvoke=True
             )
         ]

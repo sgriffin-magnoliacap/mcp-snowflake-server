@@ -20,8 +20,8 @@ uvx --from dist/mcp\_snowflake\_server\_readonly\_sysprompt-0.4.6-py3-none-any.w
 
 5. Publish the release
    Go to [https://github.com/sgriffin-magnoliacap/mcp-snowflake-server-no-write-system-prompt/releases/new](https://github.com/sgriffin-magnoliacap/mcp-snowflake-server-no-write-system-prompt/releases/new)
-   Select tag v0.4.6
-   Set title: v0.4.6
+   Select tag v0.4.X
+   Set title: v0.4.X
    Click "Publish release"
 
 6. Check GitHub Actions for successful run
@@ -29,3 +29,6 @@ uvx --from dist/mcp\_snowflake\_server\_readonly\_sysprompt-0.4.6-py3-none-any.w
 7. Confirm it's live
    Run:
    uvx mcp\_snowflake\_server\_readonly\_sysprompt\ --help
+
+8. If Claude isn't updating the version automatically, clear the uv cache with Remove-Item -Recurse -Force "$env:LOCALAPPDATA\uv\cache\archive-v0"
+
