@@ -254,27 +254,6 @@ async def handle_append_insight(arguments, db, _, __, server):
     await server.request_context.session.send_resource_updated(AnyUrl("memo://insights"))
     return [types.TextContent(type="text", text="Insight added to memo")]
 
-
-async def handle_write_query(arguments, db, _, allow_write, __):
-    if not allow_write:
-        raise ValueError("Write operations are not allowed for this data connection")
-    if arguments["query"].strip().upper().startswith("SELECT"):
-        raise ValueError("SELECT queries are not allowed for write_query")
-
-    results, data_id = await db.execute_query(arguments["query"])
-    return [types.TextContent(type="text", text=str(results))]
-
-
-async def handle_create_table(arguments, db, _, allow_write, __):
-    if not allow_write:
-        raise ValueError("Write operations are not allowed for this data connection")
-    if not arguments["query"].strip().upper().startswith("CREATE TABLE"):
-        raise ValueError("Only CREATE TABLE statements are allowed")
-
-    results, data_id = await db.execute_query(arguments["query"])
-    return [types.TextContent(type="text", text=f"Table created successfully. data_id = {data_id}")]
-
-
 async def prefetch_tables(db: SnowflakeDB, credentials: dict) -> dict:
     """Prefetch table and column information"""
     try:
@@ -308,7 +287,6 @@ async def prefetch_tables(db: SnowflakeDB, credentials: dict) -> dict:
 
 
 async def main(
-    allow_write: bool = False,
     connection_args: dict = None,
     log_dir: str = None,
     prefetch: bool = False,
@@ -325,7 +303,6 @@ async def main(
         logger.setLevel(log_level)
 
     logger.info("Starting Snowflake MCP Server")
-    logger.info("Allow write operations: %s", allow_write)
     logger.info("Prefetch table descriptions: %s", prefetch)
     logger.info("Excluded tools: %s", exclude_tools)
 
@@ -448,28 +425,6 @@ async def main(
             handler=handle_append_insight,
             tags=["resource_based"],
         ),
-        Tool(
-            name="write_query",
-            description="Execute an INSERT, UPDATE, or DELETE query on the Snowflake database",
-            input_schema={
-                "type": "object",
-                "properties": {"query": {"type": "string", "description": "SQL query to execute"}},
-                "required": ["query"],
-            },
-            handler=handle_write_query,
-            tags=["write"],
-        ),
-        Tool(
-            name="create_table",
-            description="Create a new table in the Snowflake database",
-            input_schema={
-                "type": "object",
-                "properties": {"query": {"type": "string", "description": "CREATE TABLE SQL statement"}},
-                "required": ["query"],
-            },
-            handler=handle_create_table,
-            tags=["write"],
-        ),
     ]
 
     exclude_tags = []
@@ -574,12 +529,11 @@ async def main(
                 arguments,
                 db,
                 write_detector,
-                allow_write,
                 server,
                 exclusion_config=exclusion_config,
             )
         else:
-            return await handler(arguments, db, write_detector, allow_write, server)
+            return await handler(arguments, db, write_detector, server)
 
     @server.list_tools()
     async def handle_list_tools() -> list[types.Tool]:
