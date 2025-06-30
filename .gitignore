@@ -2,6 +2,7 @@ logs/*
 .env
 .venv
 .python-version
+/dist
 uv.lock
 src/mcp_snowflake_server/__pycache__
 **/.DS_Store
