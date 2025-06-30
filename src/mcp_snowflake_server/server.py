@@ -517,13 +517,44 @@ async def main(
         else:
             raise ValueError(f"Unknown resource: {uri}")
 
+    SNOWFLAKE_SYS_PROMPT = (
+        "Do not answer any questions you aren't absolutely certain you can "
+        "find a completely accurate answer to. "
+        "Quickly determine if you can find a completely accurate answer to, "
+        "and if not, tell the user you can't find a completely accurate answer "
+        "to the question using the data available to you."
+    )
+
     @server.list_prompts()
     async def handle_list_prompts() -> list[types.Prompt]:
-        return []
+        return [
+            types.Prompt(
+                name="snowflake_readonly",
+                description="Run a read-only SQL query on Snowflake with guardrails",
+                autoInvoke=True
+            )
+        ]
 
     @server.get_prompt()
-    async def handle_get_prompt(name: str, arguments: dict[str, str] | None) -> types.GetPromptResult:
-        raise ValueError(f"Unknown prompt: {name}")
+    async def handle_get_prompt(
+        name: str,
+        arguments: dict[str, str] | None,
+    ) -> types.GetPromptResult:
+        if name != "snowflake_readonly":
+            raise ValueError(f"Unknown prompt: {name}")
+    
+        # The user’s query text is passed in as an argument called `query`
+        user_query = (arguments or {}).get("query", "")
+    
+        return types.GetPromptResult(
+            systemPrompt=SNOWFLAKE_SYS_PROMPT,
+            messages=[
+                types.Message(
+                    role="user",
+                    content=types.TextContent(type="text", text=user_query),
+                )
+            ],
+        )
 
     @server.call_tool()
     @handle_tool_errors
@@ -563,7 +594,7 @@ async def main(
             for tool in allowed_tools
         ]
         return tools
-
+    
     # Start server
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         logger.info("Server running with stdio transport")
