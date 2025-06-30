@@ -428,8 +428,6 @@ async def main(
     ]
 
     exclude_tags = []
-    if not allow_write:
-        exclude_tags.append("write")
     allowed_tools = [
         tool for tool in all_tools if tool.name not in exclude_tools and not any(tag in exclude_tags for tag in tool.tags)
     ]
