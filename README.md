@@ -1,13 +1,10 @@
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/isaacwasserman-mcp-snowflake-server-badge.png)](https://mseep.ai/app/isaacwasserman-mcp-snowflake-server)
 
 # Snowflake MCP Server
-
-[![smithery badge](https://smithery.ai/badge/mcp_snowflake_server)](https://smithery.ai/server/mcp_snowflake_server) [![PyPI - Version](https://img.shields.io/pypi/dm/mcp-snowflake-server?color&logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/mcp-snowflake-server/)
 
 ---
 
 ## Overview
-A Model Context Protocol (MCP) server implementation that provides database interaction with Snowflake. This server enables running SQL queries via tools and exposes data insights and schema context as resources.
+A Model Context Protocol (MCP) server implementation that provides database interaction with Snowflake. This server enables running SQL queries via tools and exposes data insights and schema context as resources. Does not include the ability to execute write operations, and includes a system prompt.
 
 ---
 
@@ -35,18 +32,6 @@ The server exposes the following tools:
   **Input:**  
   - `query` (string): The `SELECT` SQL query to execute  
   **Returns:** Query results as array of objects
-
-- **`write_query`** (enabled only with `--allow-write`)  
-  Execute `INSERT`, `UPDATE`, or `DELETE` queries.  
-  **Input:**  
-  - `query` (string): The SQL modification query  
-  **Returns:** Number of affected rows or confirmation
-
-- **`create_table`** (enabled only with `--allow-write`)  
-  Create new tables in the database.  
-  **Input:**  
-  - `query` (string): `CREATE TABLE` SQL statement  
-  **Returns:** Confirmation of table creation
 
 #### Schema Tools
 
@@ -86,16 +71,6 @@ The server exposes the following tools:
 
 ## Usage with Claude Desktop
 
-### Installing via Smithery
-
-To install Snowflake Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp_snowflake_server):
-
-```bash
-npx -y @smithery/cli install mcp_snowflake_server --client claude
-```
-
----
-
 ### Installing via UVX
 
 ```json
@@ -112,7 +87,6 @@ npx -y @smithery/cli install mcp_snowflake_server --client claude
       "--role", "your_role",
       "--database", "your_database",
       "--schema", "your_schema"
-      // Optionally: "--allow_write"
       // Optionally: "--log_dir", "/absolute/path/to/logs"
       // Optionally: "--log_level", "DEBUG"/"INFO"/"WARNING"/"ERROR"/"CRITICAL"
       // Optionally: "--exclude_tools", "{tool_name}", ["{other_tool_name}"]
@@ -165,7 +139,6 @@ uv --directory /absolute/path/to/mcp_snowflake_server run mcp_snowflake_server
       "--python=3.12",  // Optional
       "--directory", "/absolute/path/to/mcp_snowflake_server",
       "run", "mcp_snowflake_server"
-      // Optionally: "--allow_write"
       // Optionally: "--log_dir", "/absolute/path/to/logs"
       // Optionally: "--log_level", "DEBUG"/"INFO"/"WARNING"/"ERROR"/"CRITICAL"
       // Optionally: "--exclude_tools", "{tool_name}", ["{other_tool_name}"]
