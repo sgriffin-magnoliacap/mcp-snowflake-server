@@ -25,7 +25,7 @@ ENV PYTHONPATH=/app
 RUN mkdir -p /app/logs
 
 # Set the entrypoint to handle all arguments
-ENTRYPOINT ["mcp_snowflake_server"]
+ENTRYPOINT ["mcp_snowflake_server_readonly_sysprompt"]
 
 # Default command (can be overridden)
 CMD ["--account", "your_account", \
