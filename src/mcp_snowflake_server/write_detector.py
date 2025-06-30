@@ -6,15 +6,39 @@ from typing import Dict, List, Set, Tuple
 
 class SQLWriteDetector:
     def __init__(self):
-        # Define sets of keywords that indicate write operations
-        self.dml_write_keywords = {"INSERT", "UPDATE", "DELETE", "MERGE", "UPSERT", "REPLACE"}
+        # Data-changing DML (row-level or bulk)
+        self.dml_write_keywords: Set[str] = {
+            "INSERT", "UPDATE", "DELETE", "MERGE",
+            "UPSERT", "REPLACE",            # vendor variants
+            "COPY", "LOAD", "BULK",         # bulk-ingest / export family
+            "IMPORT", "EXPORT",
+            "PUT", "REMOVE",                # Snowflake stage operations
+        }
 
-        self.ddl_keywords = {"CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME"}
+        # DDL & maintenance (schema / storage)
+        self.ddl_keywords: Set[str] = {
+            "CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME",
+            "COMMENT", "REINDEX", "CLUSTER",
+            "OPTIMIZE", "VACUUM", "ANALYZE", "REFRESH",
+        }
 
-        self.dcl_keywords = {"GRANT", "REVOKE"}
+        # DCL (privilege & role management)
+        self.dcl_keywords: Set[str] = {"GRANT", "REVOKE", "DENY"}
 
-        # Combine all write keywords
-        self.write_keywords = self.dml_write_keywords | self.ddl_keywords | self.dcl_keywords
+        # TCL / session state that can persist writes (optional)
+        self.tcl_keywords: Set[str] = {
+            "COMMIT", "ROLLBACK", "SAVEPOINT",
+            "SET", "PRAGMA",               
+            "LOCK", "UNLOCK",
+        }
+
+        # Combine everything you want to forbid
+        self.write_keywords: Set[str] = (
+            self.dml_write_keywords
+            | self.ddl_keywords
+            | self.dcl_keywords
+            | self.tcl_keywords 
+        )
 
     def analyze_query(self, sql_query: str) -> Dict:
         """
