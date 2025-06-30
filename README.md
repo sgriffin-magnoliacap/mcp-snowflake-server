@@ -1,6 +1,8 @@
 
 # Snowflake MCP Server
 
+Slightly altered from https://github.com/isaacwasserman/mcp-snowflake-server
+
 ---
 
 ## Overview
