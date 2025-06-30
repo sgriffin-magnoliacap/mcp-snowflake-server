@@ -152,8 +152,6 @@ uv --directory /absolute/path/to/mcp_snowflake_server run mcp_snowflake_server
 ---
 
 ## Notes
-
-- By default, **write operations are disabled**. Enable them explicitly with `--allow-write`.
 - The server supports filtering out specific databases, schemas, or tables via exclusion patterns.
 - The server exposes additional per-table context resources if prefetching is enabled.
 - The `append_insight` tool updates the `memo://insights` resource dynamically.
